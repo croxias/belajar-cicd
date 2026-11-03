@@ -1,31 +1,33 @@
 name: Simulasi CI/CD Pertamaku
 
-# 1. TRIGGER (Kapan robot harus berjalan?)
 on:
   push:
     branches:
       - main 
 
 jobs:
-  # 2. PROSES CI (Tahap Testing)
+  # 1. Tahap Testing
   testing-kode:
-    runs-on: ubuntu-latest # Robot menggunakan komputer virtual Linux
+    runs-on: ubuntu-latest
     steps:
       - name: Tarik kode dari brankas
         uses: actions/checkout@v4
-      
       - name: Jalankan Unit Test (Simulasi)
-        run: |
-          echo "Memulai pengecekan kode..."
-          echo "Tidak ada error. Kode aman 100%!"
+        run: echo "Tidak ada error. Kode aman 100%!"
 
-  # 3. PROSES CD (Tahap Staging)
+  # 2. Tahap Staging (Otomatis)
   deploy-ke-staging:
-    needs: testing-kode # Ini adalah rem otomatis: Jangan deploy kalau testing gagal!
+    needs: testing-kode
     runs-on: ubuntu-latest
     steps:
-      - name: Persiapan Deploy
-        run: echo "Menyiapkan server Staging..."
-      
       - name: Unggah Aplikasi
         run: echo "Aplikasi berhasil di-deploy ke lingkungan Staging!"
+
+  # 3. Tahap Production (Butuh Persetujuan)
+  deploy-ke-production:
+    needs: deploy-ke-staging # Baru bisa jalan kalau staging sukses
+    environment: Production # Ini yang memicu "rem" yang kita buat di Settings tadi
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy ke Publik
+        run: echo "Aplikasi RESMI meluncur ke pengguna publik!"
